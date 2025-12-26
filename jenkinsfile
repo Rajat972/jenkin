@@ -1,56 +1,39 @@
 pipeline {
-    agent any
-
-    environment {
-        name = 'gaurav'
+  agent any
+  stages {
+    stage('build') {
+      steps {
+        sh '''pwd
+date'''
+      }
     }
 
-  parameters {
-        string(name: 'person', defaultValue: "rajat", description: "who are u")
-        booleanParam(name: 'ismale', defaultValue: true, description: "gender" )
-        choice(name: 'city', choices: ['jaipur','jammu','delhi'], description: "name the city")
-    }
-
-    stages {
-        stage('Hello') {
-            environment {
-                name = 'saurav'
-            }
-            steps {
-                sh '''
-                cd
-                date
-                echo "${name}"
-                '''
-            }
+    stage('test') {
+      parallel {
+        stage('test') {
+          steps {
+            echo 'test mesasage'
+            sleep 10
+          }
         }
 
-        stage('Env') {
-            steps {
-                sh 'echo "${BUILD_ID}"'
-                echo "Person: ${person}"
-                
-            }
+        stage('test parallel') {
+          steps {
+            sh 'date'
+            sleep 5
+          }
         }
-        stage('continue ?') {
-            input{
-                message "shoulde we go?"
-                ok "yes we shouled"
-            }
-            steps{
-                sh 'date'
-            }
-        }
+
+      }
     }
-    post{
-        always{
-           echo "alwys running"
-        }
-        success{
-           echo "alwys sucess"
-        }
-        failure{
-           echo "alwys failure"
-        }
+
+    stage('prod') {
+      agent any
+      steps {
+        echo 'enter to prod'
+        sleep 5
+      }
     }
+
+  }
 }
